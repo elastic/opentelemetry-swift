@@ -14,6 +14,8 @@ let package = Package(
         .library(name: "libOpenTelemetryApi", type: .static, targets: ["OpenTelemetryApi"]),
         .library(name: "OpenTelemetrySdk", type: .dynamic, targets: ["OpenTelemetrySdk"]),
         .library(name: "libOpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
+        .library(name: "URLSessionInstrumentation", type: .dynamic, targets: ["URLSessionInstrumentation"]),
+        .library(name: "libURLSessionInstrumentation", type: .static, targets: ["URLSessionInstrumentation"]),
         .library(name: "OpenTracingShim", type: .dynamic, targets: ["OpenTracingShim"]),
         .library(name: "libOpenTracingShim", type: .static, targets: ["OpenTracingShim"]),
         .library(name: "SwiftMetricsShim", type: .dynamic, targets: ["SwiftMetricsShim"]),
@@ -50,6 +52,11 @@ let package = Package(
         .target(name: "OpenTelemetrySdk",
                 dependencies: ["OpenTelemetryApi",
                                .product(name: "Atomics", package: "swift-atomics")]
+        ),
+        .target(name: "URLSessionInstrumentation",
+                dependencies: ["OpenTelemetrySdk"],
+                path: "Sources/Instrumentation/URLSession"
+
         ),
         .target(name: "OpenTracingShim",
                 dependencies: ["OpenTelemetrySdk",
@@ -155,6 +162,11 @@ let package = Package(
         .target(name: "DatadogSample",
                 dependencies: ["DatadogExporter"],
                 path: "Examples/Datadog Sample",
+                exclude: ["README.md"]
+        ),
+        .target(name: "NetworkSample",
+                dependencies: ["URLSessionInstrumentation", "StdoutExporter"],
+                path: "Examples/Network Sample",
                 exclude: ["README.md"]
         ),
     ]
