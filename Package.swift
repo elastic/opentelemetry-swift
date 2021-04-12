@@ -16,6 +16,8 @@ let package = Package(
         .library(name: "libOpenTelemetrySdk", type: .static, targets: ["OpenTelemetrySdk"]),
         .library(name: "URLSessionInstrumentation", type: .dynamic, targets: ["URLSessionInstrumentation"]),
         .library(name: "libURLSessionInstrumentation", type: .static, targets: ["URLSessionInstrumentation"]),
+        .library(name: "ResourceExtension", type: .dynamic, targets: ["ResourceExtension"]),
+        .library(name: "libResourceExtension", type: .dynamic, targets: ["ResourceExtension"]),
         .library(name: "OpenTracingShim", type: .dynamic, targets: ["OpenTracingShim"]),
         .library(name: "libOpenTracingShim", type: .static, targets: ["OpenTracingShim"]),
         .library(name: "SwiftMetricsShim", type: .dynamic, targets: ["SwiftMetricsShim"]),
@@ -58,6 +60,9 @@ let package = Package(
                 path: "Sources/Instrumentation/URLSession"
 
         ),
+        .target(name: "ResourceExtension",
+                dependencies: ["OpenTelemetrySdk"],
+                path: "Sources/Instrumentation/sdk-resource-extension"),
         .target(name: "OpenTracingShim",
                 dependencies: ["OpenTelemetrySdk",
                                "Opentracing"]
@@ -104,6 +109,9 @@ let package = Package(
                     dependencies: ["OpenTelemetryApi"],
                     path: "Tests/OpenTelemetryApiTests"
         ),
+        .testTarget(name: "ResourceExtensionTests",
+                dependencies: ["ResourceExtension","OpenTelemetrySdk"],
+                path: "Tests/InstrumentationTests/sdk-resource-extension-tests"),
         .testTarget(name: "OpenTracingShimTests",
                     dependencies: ["OpenTracingShim",
                                    "OpenTelemetrySdk"],
