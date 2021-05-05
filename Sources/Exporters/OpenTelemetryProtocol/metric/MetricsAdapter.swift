@@ -64,6 +64,7 @@ struct MetricsAdapter {
                     guard let sumData = $0 as? SumData<Double> else {
                         break
                     }
+                
                     var protoDataPoint = Opentelemetry_Proto_Metrics_V1_DoubleDataPoint()
                     protoDataPoint.value = sumData.sum
                     sumData.labels.forEach {
@@ -74,15 +75,15 @@ struct MetricsAdapter {
                     }
                 
                     protoMetric.doubleSum.dataPoints.append(protoDataPoint)
+                    break
                 case .doubleSummary:
                 
                     guard let summaryData = $0 as? SummaryData<Double> else {
                         break
                     }
-                    var protoDataPoint = Opentelemetry_Proto_Metrics_V1_DoubleHistogramDataPoint()
+                    var protoDataPoint = Opentelemetry_Proto_Metrics_V1_DoubleSummaryDataPoint()
                     protoDataPoint.sum = summaryData.sum
                     protoDataPoint.count = UInt64(summaryData.count)
-                    protoDataPoint.explicitBounds = [summaryData.min, summaryData.max]
                 
                     protoDataPoint.startTimeUnixNano = summaryData.startTimestamp.timeIntervalSince1970.toNanoseconds
                     protoDataPoint.timeUnixNano = summaryData.timestamp.timeIntervalSince1970.toNanoseconds
@@ -94,8 +95,8 @@ struct MetricsAdapter {
                         protoDataPoint.labels.append(kvp)
                     }
                 
-                    protoMetric.doubleHistogram.dataPoints.append(protoDataPoint)
-                
+                    protoMetric.doubleSummary.dataPoints.append(protoDataPoint)
+                    break
                 case .intSum:
                     guard let sumData = $0 as? SumData<Int> else {
                         break
@@ -110,15 +111,14 @@ struct MetricsAdapter {
                     }
                 
                     protoMetric.intSum.dataPoints.append(protoDataPoint)
-                
+                    break
                 case .intSummary:
                     guard let summaryData = $0 as? SummaryData<Int> else {
                         break
                     }
-                    var protoDataPoint = Opentelemetry_Proto_Metrics_V1_IntHistogramDataPoint()
-                    protoDataPoint.sum = Int64(summaryData.sum)
+                    var protoDataPoint = Opentelemetry_Proto_Metrics_V1_DoubleSummaryDataPoint()
+                    protoDataPoint.sum = Double(summaryData.sum)
                     protoDataPoint.count = UInt64(summaryData.count)
-                    protoDataPoint.bucketCounts = [UInt64(summaryData.min), UInt64(summaryData.max)]
                     protoDataPoint.startTimeUnixNano = summaryData.startTimestamp.timeIntervalSince1970.toNanoseconds
                     protoDataPoint.timeUnixNano = summaryData.timestamp.timeIntervalSince1970.toNanoseconds
                 
@@ -129,7 +129,7 @@ struct MetricsAdapter {
                         protoDataPoint.labels.append(kvp)
                     }
                 
-                    protoMetric.intHistogram.dataPoints.append(protoDataPoint)
+                    protoMetric.doubleSummary.dataPoints.append(protoDataPoint)
             }
         }
         return protoMetric
